@@ -19,6 +19,8 @@ require __DIR__ . '/src/models/base_model.php';
 
 $dbh = connectionDB();
 
+require __DIR__ . "/src/models/{$currentAction['model']}_model.php";
+
 require __DIR__ . '/src/controllers/base_controller.php';
 require __DIR__ . "/src/controllers/{$currentAction['controller']}_controller.php";
 require __DIR__ . '/view/layouts/default.php';
