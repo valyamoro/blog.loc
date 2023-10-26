@@ -17,7 +17,7 @@
     </div>
     <button type="submit" name="registry" value="1" class="btn btn-primary">Зарегистрироваться</button>
 </form>
-<?php if(!empty($_SESSION['msg'])): ?>
-    <?php echo '<p class="msg"> ' . nl2br($_SESSION['msg']) . ' </p>'; ?>
-    <?php unset($_SESSION['msg']); ?>
+<?php if(!empty($_SESSION['errors'])): ?>
+    <?php echo '<p class="msg"> ' . nl2br($_SESSION['errors']) . ' </p>'; ?>
+    <?php unset($_SESSION['errors']); ?>
 <?php endif; ?>

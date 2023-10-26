@@ -1,41 +1,49 @@
 <?php
 
-// Указываем заголовок документа.
+// Заголовок страницы.
 $metaTitle = 'Регистрация';
 
-// Если пользователь нажал на кнопку "Зарегистрироваться", то выполняем скрипт внутри условия.
+// Пользователь нажал на кнопку регистрации:
 if ($_POST['registry'] == 1) {
-    // Записываем данные потенциального пользователя.
-    $userData = $_POST;
-    // Записываем сообщения об ошибках валидации, если они есть.
-    $msg = validateUserData($userData);
-    if (!empty($msg)) {
-        // Объединяем все элементы массива ошибок валидации в строку.
-        $msg = implode(' ', $msg);
-        // Записываем в сессию строку с ошибками валидации.
-        $_SESSION['msg'] = $msg;
+    // Присваиваю введенные пользователем данные.
+    $user = $_POST;
+    // Собираю ошибки валидации.
+    $errorMessage = validateUser($user);
+
+    if (!empty($errorMessage)) {
+        // Помещаем в сесию все ошибки валидации, если есть.
+        $_SESSION['errors'] = $errorMessage;
     } else {
-        // Экранируем данные потенциального пользователя.
-        $userData = escapeData($userData);
-        // Записываем true, если пароли совпадают.
-        $matchPasswords = confirmPassword($userData['password'], $userData['confirm_password']);
-        if (!$matchPasswords) {
-            // Если пароли не совпали, записываем в сессию сообщение об ошибке.
+        // Маршрут до страницы регистрации.
+        $route = 'auth/registry';
+
+        // Экранирую данные.
+        $user = escapeData($user);
+        // true, если пароли совпадают.
+        $isTheyMatch = confirmPassword($user['password'], $user['confirm_password']);
+
+        if (!$isTheyMatch) {
+            // Если введенные пользователем пароли не совпали.
             $_SESSION['msg'] = 'Пароли не совпадают';
         } else {
-            // Если введенная пользователем почта уже есть в БД, то записываем true.
-            $emailExist = checkUserEmail($userData['email']);
-            // Если такая почта уже есть в БД, то выводим сообщение, иначе добавляем нового пользователя в БД.
-            $emailExist ? $_SESSION['msg'] = 'Пользователь с этими данными уже существует!' : addUser($userData);
-            // Выполняем блок кода, если введенной пользователем почты не существует в БД.
-            if (!$emailExist) {
-                // Записываем пароль и почту пользователя в сессию.
-                $_SESSION['notification']['email'] = $userData['email'];
-                $_SESSION['notification']['password'] = $userData['password'];
-                // Перенаправляем пользователя на страницу с уведомлением об успешной регистрации.
-                header('Location: /auth/notification');
+            // true, если введенная пользователем почта уже существует.
+            $isEmailExist = checkUserEmail($user['email']);
+
+            // Если нет такой почты:
+            if ($isEmailExist) {
+                $_SESSION['msg'] = 'Пользователь с этими данными уже существует!';
+            } else {
+                // Создаем пользователя.
+                addUser($user);
+                // Добавляем данные пользователя в сессию.
+                $_SESSION['notification']['email'] = $user['email'];
+                $_SESSION['notification']['password'] = $user['password'];
+
+                // Маршрут до страницы с уведомлением об успешной регистрации.
+                $route = '/auth/notification';
             }
         }
+        header("Location: {$route}");
     }
 }
 
