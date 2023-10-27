@@ -9,8 +9,7 @@ if ($_POST['registry'] == 1) {
     $user = $_POST;
     // Собираю ошибки валидации.
     $errorMessage = validateUser($user);
-
-    if (!empty($errorMessage)) {
+    if (!\is_null($errorMessage)) {
         // Помещаем в сесию все ошибки валидации, если есть.
         $_SESSION['errors'] = $errorMessage;
     } else {
@@ -19,18 +18,17 @@ if ($_POST['registry'] == 1) {
 
         // Экранирую данные.
         $user = escapeData($user);
-        // true, если пароли совпадают.
-        $isTheyMatch = confirmPassword($user['password'], $user['confirm_password']);
+        // true, если введенные пользователем пароли совпадают.
+        $isTheyMatch = isPasswordsMatch($user['password'], $user['confirm_password']);
 
         if (!$isTheyMatch) {
             // Если введенные пользователем пароли не совпали.
             $_SESSION['msg'] = 'Пароли не совпадают';
         } else {
-            // true, если введенная пользователем почта уже существует.
-            $isEmailExist = checkUserEmail($user['email']);
-
+            // 1, если введенная пользователем почта уже существует, иначе 0.
+            $userEmailExist = checkUserEmail($user['email']);
             // Если нет такой почты:
-            if ($isEmailExist) {
+            if ($userEmailExist) {
                 $_SESSION['msg'] = 'Пользователь с этими данными уже существует!';
             } else {
                 // Создаем пользователя.

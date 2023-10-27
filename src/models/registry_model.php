@@ -2,11 +2,11 @@
 
 /** Валидация данных пользователя.
  * @param array $data
- * @return string
+ * @return null|string
  */
-function validateUser(array $data): string
+function validateUser(array $data): ?string
 {
-    $result = '';
+    $result = null;
 
     // Валидация почты.
     if (empty($data['email'])) {
@@ -40,6 +40,7 @@ function validateUser(array $data): string
     } elseif (\mb_strlen($data['user_name'], 'utf8') <= 3) {
         $result .= 'Имя содержит менее 4 символов' . PHP_EOL;
     }
+
     // Возвращаю массив сообщений с ошибками валидации.
     return $result;
 }
@@ -54,7 +55,7 @@ function escapeData(array $data): array
 
     foreach ($data as $key => $value) {
         // Экранирую и преобразую приходящие данные с помощью специальных функций.
-        $result[$key] = htmlspecialchars(strip_tags(trim($value)));
+        $result[$key] = \htmlspecialchars(\strip_tags(\trim($value)));
     }
     // Возвращают массив экранированных данных.
     return $result;
@@ -62,9 +63,9 @@ function escapeData(array $data): array
 
 /** Проверяем существует ли приходящая почта от пользователя.
  * @param string $email
- * @return bool
+ * @return int
  */
-function checkUserEmail(string $email): bool
+function checkUserEmail(string $email): int
 {
     // Получаем почту.
     $query = 'SELECT email FROM users WHERE email=? LIMIT 1';
@@ -74,8 +75,8 @@ function checkUserEmail(string $email): bool
     // Запускаем подготовленный запрос на выполнение.
     $sth->execute([$email]);
 
-    // true, если введенная почта совпала с существующей.
-    return (bool) $sth->fetch();
+    // единица, если введенная пользователем почта совпала с существующей.
+    return $sth->rowCount();
 }
 
 /** Добавляем нового пользователя в базу данных.
@@ -91,6 +92,8 @@ function addUser(array $data): int
     // Подготавливаем запрос на выполнение.
     $sth = connectionDB()->prepare($query);
 
+    // Сегодняшняя дата и время.
+    $now = date('Y-m-d H:i:s');
     // Запускаем подготовленный запрос на выполнения, передавая туда массив значений для именованных параметров.
     $sth->execute([
         ':role_id' => '0',
@@ -98,20 +101,20 @@ function addUser(array $data): int
         ':email' => $data['email'],
         ':password' => $data['password'],
         ':hash' => '0',
-        ':created_at' => date('Y-m-d H:i:s'),
-        ':updated_at' => date('Y-m-d H:i:s'),
+        ':created_at' => $now,
+        ':updated_at' => $now,
     ]);
 
     // Возвращаем айди последней созданной записи.
     return (int) connectionDB()->lastInsertId();
 }
 
-/** Проверяем совпадают ли введенные пользователем пароли.
+/** Проверяем идентичны ли введенные пользователем пароли.
  * @param string $password
  * @param string $confirmPassword
  * @return bool
  */
-function confirmPassword(string $password, string $confirmPassword): bool
+function isPasswordsMatch(string $password, string $confirmPassword): bool
 {
     // true, если пароли совпали.
     return $password === $confirmPassword;
