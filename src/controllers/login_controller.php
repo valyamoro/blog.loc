@@ -1,17 +1,17 @@
 <?php
-
+// Время выполнения - 25 минут.
 // Заголовок страницы.
 $metaTitle = 'Авторизация';
 
 // Пользователь нажал на кнопку авторизации:
-if ($_POST['login'] == 1) {
+if ($_POST['login'] === '1') {
     // Присваиваю введенные пользователем данные.
     $user = $_POST;
     // Собираю ошибки валидации.
     $errorMessage = validateUser($user);
 
     // Маршрут до страницы авторизации.
-    $route = 'auth/login';
+    $route = '/auth/login';
     if (!\is_null($errorMessage)) {
         // Помещаю в сессию все ошибки валидации.
         $_SESSION['errors'] = $errorMessage;
@@ -20,10 +20,9 @@ if ($_POST['login'] == 1) {
         $user = escapeData($user);
         // Получаю данные пользователя по введенной почте.
         $userDataBase = getUser($user['email']);
-
         // Проверяю совпадает ли введенный и существующий пароль в базе данных.
-        if ($userDataBase['password'] !== $user['password']) {
-            $_SESSION['errors'] = 'Вы ввели неверные данные.';
+        if (!\password_verify($user['password'], $userDataBase['hash'])) {
+            $_SESSION['errors'] = 'Вы ввели неверные данные.' . "\n";
         } else {
             // Помещаю в сессию данные пользователя.
             $_SESSION['user'] = [
@@ -35,8 +34,8 @@ if ($_POST['login'] == 1) {
             $route = '/auth/profile';
         }
     }
-    // Перенаправляю на нужную страницу.
-    header("Location: {$route}");
+    \header("Location: {$route}");
 }
 
+// Путь до страницы с регистрацией.
 $content = render($currentAction['view']);

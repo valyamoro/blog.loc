@@ -10,22 +10,16 @@ function validateUser(array $data): ?string
 
     // Валидация почты пользователя.
     if (empty($data['email'])) {
-        $result .= 'Заполните поле почты' . PHP_EOL;
-    } elseif (!\filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-        $result .= 'Некорректная почта!' . PHP_EOL;
+        $result .= 'Заполните поле почты' . "\n";
+    } elseif (\strlen($data['email']) > 255) {
+        $result .= 'Неверная почта' . "\n";
     }
 
     // Валидация пароля пользователя.
     if (empty($data['password'])) {
-        $result .= 'Заполните поле пароль' . PHP_EOL;
-    } elseif (\is_numeric($data['password'])) {
-        $result .= 'Пароль не должен содержать только цифры' . PHP_EOL;
-    } elseif (!\preg_match('/[A-Z]/', $data['password'])) {
-        $result .= 'Пароль должен содержать минимум одну заглавную букву' . PHP_EOL;
-    } elseif (\mb_strlen($data['password'], 'utf8') <= 5) {
-        $result .= 'Пароль содержит меньше 5 символов' . PHP_EOL;
-    } elseif (\mb_strlen($data['password'], 'utf8') > 15) {
-        $result .= 'Пароль больше 15 символов' . PHP_EOL;
+        $result .= 'Заполните поле пароль' . "\n";
+    } elseif (\strlen($data['password']) > 255) {
+        $result .= 'Неверный пароль' . "\n";
     }
 
     // Возвращаю ошибки валидации.
@@ -50,18 +44,18 @@ function escapeData(array $data): array
 
 /** Получаю данные пользователя по почте.
  * @param string $email
- * @return mixed
+ * @return array
  */
-function getUser(string $email)
+function getUser(string $email): array
 {
     // Получаем все данные пользователя.
     $query = 'SELECT * FROM users WHERE email=? LIMIT 1';
 
     // Подготавливаем запрос на выполнение.
     $sth = connectionDB()->prepare($query);
-    // Запускаем подготовленный запрос нвы полнение, передвая туда почту.
+    // Запускаем подготовленный запрос на выполнение, передавая туда почту.
     $sth->execute([$email]);
 
-    // Массив данных пользователя.
+    // Возвращаю массив данных пользователя.
     return $sth->fetch();
 }
