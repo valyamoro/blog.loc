@@ -1,3 +1,7 @@
+<?php if(!empty($_SESSION['errors'])): ?>
+    <?php echo '<p class="msg"> ' . nl2br($_SESSION['errors']) . ' </p>'; ?>
+    <?php unset($_SESSION['errors']); ?>
+<?php endif; ?>
 <form action="" method="POST">
     <div class="mb-3">
         <label for="username" class="form-label">Username</label>
@@ -17,7 +21,3 @@
     </div>
     <button type="submit" name="registry" value="1" class="btn btn-primary">Зарегистрироваться</button>
 </form>
-<?php if(!empty($_SESSION['errors'])): ?>
-    <?php echo '<p class="msg"> ' . nl2br($_SESSION['errors']) . ' </p>'; ?>
-    <?php unset($_SESSION['errors']); ?>
-<?php endif; ?>

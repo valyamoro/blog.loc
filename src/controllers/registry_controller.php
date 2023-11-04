@@ -12,9 +12,8 @@ if ($_POST['registry'] === '1') {
         $route = '/auth/registry';
 
         $user = escapeData($user);
-        $isPasswordsMatch = isPasswordsMatch($user['password'], $user['confirm_password']);
 
-        if ($isPasswordsMatch === false) {
+        if ($user['password'] !== $user['confirm_password']) {
             $_SESSION['errors'] = 'Пароли не совпадают' . "\n";
         } else {
             $isUserEmailExists = isUserEmailExists($user['email']);
@@ -22,6 +21,7 @@ if ($_POST['registry'] === '1') {
             if ($isUserEmailExists === true) {
                 $_SESSION['errors'] = 'Пользователь с этими данными уже существует!' . "\n";
             } else {
+                $password = $user['password'];
                 $user['password'] = \password_hash($user['password'], PASSWORD_DEFAULT);
                 $lastId = addUser($user);
 
@@ -30,13 +30,13 @@ if ($_POST['registry'] === '1') {
                 } else {
                     $_SESSION['success'] = [
                         'email' => $user['email'],
-                        'password' => $user['password'],
+                        'password' => $password,
                     ];
-                    $route = '/auth/notification';
+                    $route = '/auth/redirect_registry';
                 }
             }
         }
-        header("Location: {$route}");
+        \header("Location: {$route}");
         die;
     }
 }

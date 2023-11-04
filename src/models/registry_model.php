@@ -89,10 +89,3 @@ function addUser(array $data): int
 
     return (int)connectionDB()->lastInsertId();
 }
-
-/** Проверяем идентичны ли введенные пользователем пароли.
- */
-function isPasswordsMatch(string $password, string $confirmPassword): bool
-{
-    return $password === $confirmPassword;
-}

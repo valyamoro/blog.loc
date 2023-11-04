@@ -1,7 +1,7 @@
 <?php
 
 return [
-    '#^regsitry?#' => [
+    '#^registry?#' => [
         'controller' => 'registry',
         'model' => 'registry',
         'view' => '',
@@ -11,9 +11,9 @@ return [
         'model' => 'registry',
         'view' => 'auth/registry',
     ],
-    '#^auth/notification?#' => [
-        'controller' => 'notification',
-        'model' => 'notification',
-        'view' => 'auth/notification',
+    '#^auth/redirect_registry?#' => [
+        'controller' => 'redirectRegistry',
+        'model' => 'redirectRegistry',
+        'view' => 'auth/redirect_registry',
     ],
 ];
