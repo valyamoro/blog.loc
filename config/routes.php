@@ -26,4 +26,19 @@ return [
         'model' => 'redirectRegistry',
         'view' => 'auth/redirect_registry',
     ],
+    '#^add_post?#' => [
+        'controller' => 'addPost',
+        'model' => 'addPost',
+        'view' => '',
+    ],
+    '#^blog/add_post?#' => [
+        'controller' => 'addPost',
+        'model' => 'addPost',
+        'view' => 'blog/add_post',
+    ],
+    '#^#' => [
+        'controller' => 'index',
+        'model' => 'index',
+        'view' => '/index',
+    ],
 ];
