@@ -1,41 +1,37 @@
 <?php
-// Время выполнения - 25 минут.
-// Заголовок страницы.
+// На рефакторинг потрачено 19 минут. Теперь функция getUser, возвращает либо массив, либо false.
 $metaTitle = 'Авторизация';
 
-// Пользователь нажал на кнопку авторизации:
 if ($_POST['login'] === '1') {
-    // Присваиваю введенные пользователем данные.
-    $user = $_POST;
-    // Собираю ошибки валидации.
-    $errorMessage = validateUser($user);
+    $credentials = $_POST;
+    $errorMessage = validateUser($credentials);
 
-    // Маршрут до страницы авторизации.
     $route = '/auth/login';
+
     if (!\is_null($errorMessage)) {
-        // Помещаю в сессию все ошибки валидации.
         $_SESSION['errors'] = $errorMessage;
     } else {
-        // Экранирую данные.
-        $user = escapeData($user);
-        // Получаю данные пользователя по введенной почте.
-        $userDataBase = getUser($user['email']);
-        // Проверяю совпадает ли введенный и существующий пароль в базе данных.
-        if (!\password_verify($user['password'], $userDataBase['hash'])) {
+        $credentials = escapeData($credentials);
+        $user = getUser($credentials['email']);
+
+        if ($user === false) {
             $_SESSION['errors'] = 'Вы ввели неверные данные.' . "\n";
         } else {
-            // Помещаю в сессию данные пользователя.
-            $_SESSION['user'] = [
-                'id' => $userDataBase['id'],
-                'name' => $userDataBase['username'],
-                'email' => $userDataBase['email'],
-            ];
-            // Маршрут до страницы профиля.
-            $route = '/auth/profile';
+            if (!\password_verify($credentials['password'], $user['password'])) {
+                $_SESSION['errors'] = 'Вы ввели неверные данные.' . "\n";
+            } else {
+                $_SESSION['user'] = [
+                    'id' => $user['id'],
+                    'name' => $user['username'],
+                    'email' => $user['email'],
+                ];
+
+                $route = '/auth/profile';
+            }
         }
     }
     \header("Location: {$route}");
+    die;
 }
 
-// Путь до страницы с регистрацией.
 $content = render($currentAction['view']);
