@@ -5,6 +5,27 @@ function dump(mixed $data): void
     echo '<pre>'; \print_r($data); echo '</pre>';
 }
 
+function connectionDB(): ?\PDO
+{
+    static $dbh = null;
+
+    if (!\is_null($dbh)) {
+        return $dbh;
+    }
+
+    $dbh = new \PDO(
+        'mysql:host=localhost;dbname=blog.loc;charset=utf8mb4',
+        'root',
+        '', [
+        \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+        \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+        \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8mb4'",
+    ],
+    );
+
+    return $dbh;
+}
+
 function render(string $view, array $data =[]): string
 {
     \extract($data);
@@ -27,27 +48,19 @@ function redirect(string $http = ''): never
 {
     $redirect = $http ?? $_SERVER['HTTP_REFERER'] ?? '/';
 
-    \HEADER("Location: {$redirect}");
+    \header("Location: {$redirect}");
     die;
 }
 
-function connectionDB(): ?\PDO
+function escapeData(array $data): array
 {
-    static $dbh = null;
+    $result = [];
 
-    if (!\is_null($dbh)) {
-        return $dbh;
+    foreach ($data as $key => $value) {
+        $result[$key] = \htmlspecialchars(\strip_tags(\trim($value)));
     }
 
-    $dbh = new \PDO(
-        'mysql:host=localhost;dbname=blog.loc;charset=utf8mb4',
-        'root',
-        '', [
-        \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-        \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
-        \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8mb4'",
-    ],
-    );
-
-    return $dbh;
+    return $result;
 }
+
+
