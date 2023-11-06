@@ -41,19 +41,6 @@ function validateUser(array $data): ?string
     return $result;
 }
 
-/** Экранирование данных.
- */
-function escapeData(array $data): array
-{
-    $result = [];
-
-    foreach ($data as $key => $value) {
-        $result[$key] = \htmlspecialchars(\strip_tags(\trim($value)));
-    }
-
-    return $result;
-}
-
 /** Проверяем существует ли приходящая почта от пользователя.
  */
 function isUserEmailExists(string $email): bool
@@ -75,16 +62,14 @@ function addUser(array $data): int
 
     $sth = connectionDB()->prepare($query);
 
-    $now = \date('Y-m-d H:i:s');
-
     $sth->execute([
         ':role_id' => '0',
         ':username' => $data['user_name'],
         ':email' => $data['email'],
         ':password' => $data['password'],
         ':hash' => '0',
-        ':created_at' => $now,
-        ':updated_at' => $now,
+        ':created_at' => $data['created_at'],
+        ':updated_at' => $data['updated_at'],
     ]);
 
     return (int)connectionDB()->lastInsertId();
