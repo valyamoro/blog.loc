@@ -36,6 +36,16 @@ return [
         'model' => 'addPost',
         'view' => 'blog/add_post',
     ],
+    '#^edit_post?#' => [
+        'controller' => 'editPost',
+        'model' => 'post',
+        'view' => '',
+    ],
+    '#^blog/edit_post?#' => [
+        'controller' => 'editPost',
+        'model' => 'post',
+        'view' => 'blog/edit_post',
+    ],
     '#^#' => [
         'controller' => 'index',
         'model' => 'index',

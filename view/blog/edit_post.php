@@ -1,8 +1,7 @@
-<?php $_SESSION['user']['id'] = 1; ?>
-<?php if (empty($_SESSION['user']['id']))  {
-    header('Location: /');
-}
-?>
+<?php if(!empty($_SESSION['msg'])): ?>
+    <?php echo '<p class="msg"> ' . nl2br($_SESSION['msg']) . ' </p>'; ?>
+    <?php unset($_SESSION['msg']); ?>
+<?php endif; ?>
 <form action="" method="post" enctype="multipart/form-data">
     <div class="mb-3">
         <label for="category" class="form-label">Категория</label>
@@ -21,18 +20,12 @@
         <input type="text" name="content" class="form-control" id="content">
     </div>
     <div class="mb-3">
-        <label for="is_active" class="form-label">Фото поста</label>
-        <input type="file" name="image_post" class="form-control" id="image_post">
+        <label for="file" class="form-label">Фото поста</label>
+        <input type="file" name="image" class="form-control" id="image_post">
     </div>
-<!--Тут будет чекбокс-->
     <div class="mb-3">
         <label for="is_active" class="form-label">is_active</label>
-        <input type="text" name="is_active" class="form-control" id="is_active">
+        <input type="checkbox" checked="checked" name="is_active" value="1" class="form-control" id="is_active">
     </div>
-
-    <button type="submit" class="btn btn-primary">Добавить пост</button>
+    <button type="submit" class="btn btn-primary">Submit</button>
 </form>
-<?php if(!empty($_SESSION['errors'])): ?>
-    <?php echo '<p class="msg"> ' . nl2br($_SESSION['errors']) . ' </p>'; ?>
-    <?php unset($_SESSION['errors']); ?>
-<?php endif; ?>
