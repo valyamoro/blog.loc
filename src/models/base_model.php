@@ -2,7 +2,9 @@
 
 function dump(mixed $data): void
 {
-    echo '<pre>'; \print_r($data); echo '</pre>';
+    echo '<pre>';
+    \print_r($data);
+    echo '</pre>';
 }
 
 function connectionDB(): ?\PDO
@@ -26,7 +28,7 @@ function connectionDB(): ?\PDO
     return $dbh;
 }
 
-function render(string $view, array $data =[]): string
+function render(string $view, array $data = []): string
 {
     \extract($data);
 
@@ -63,4 +65,11 @@ function escapeData(array $data): array
     return $result;
 }
 
+function uploadFile(string $path, array $image): string
+{
+    $filePath = __DIR__ . "\..\..\uploads\\{$path}\\" . \uniqid() . $image['name'];
 
+    \move_uploaded_file($image['tmp_name'], $filePath);
+
+    return '\..\..\\' . \strstr($filePath, 'uploads');
+}
